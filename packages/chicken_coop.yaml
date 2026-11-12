@@ -1,0 +1,75 @@
+# Coop high/low helpers. Drop this in /config/packages/ (see README).
+# Statistics sensors read recorder history on startup, so they fill in immediately.
+sensor:
+  - platform: statistics
+    name: "Coop Temp High 24h"
+    entity_id: sensor.coop_temperature
+    state_characteristic: value_max
+    max_age: { hours: 24 }
+    sampling_size: 2000
+  - platform: statistics
+    name: "Coop Temp Low 24h"
+    entity_id: sensor.coop_temperature
+    state_characteristic: value_min
+    max_age: { hours: 24 }
+    sampling_size: 2000
+  - platform: statistics
+    name: "Coop Temp High 7d"
+    entity_id: sensor.coop_temperature
+    state_characteristic: value_max
+    max_age: { days: 7 }
+    sampling_size: 10000
+  - platform: statistics
+    name: "Coop Temp Low 7d"
+    entity_id: sensor.coop_temperature
+    state_characteristic: value_min
+    max_age: { days: 7 }
+    sampling_size: 10000
+  - platform: statistics
+    name: "Outside Temp High 24h"
+    entity_id: sensor.openweathermap_temperature
+    state_characteristic: value_max
+    max_age: { hours: 24 }
+    sampling_size: 2000
+  - platform: statistics
+    name: "Outside Temp Low 24h"
+    entity_id: sensor.openweathermap_temperature
+    state_characteristic: value_min
+    max_age: { hours: 24 }
+    sampling_size: 2000
+  - platform: statistics
+    name: "Outside Temp High 7d"
+    entity_id: sensor.openweathermap_temperature
+    state_characteristic: value_max
+    max_age: { days: 7 }
+    sampling_size: 10000
+  - platform: statistics
+    name: "Outside Temp Low 7d"
+    entity_id: sensor.openweathermap_temperature
+    state_characteristic: value_min
+    max_age: { days: 7 }
+    sampling_size: 10000
+  - platform: statistics
+    name: "Coop Humidity High 24h"
+    entity_id: sensor.coop_humidity
+    state_characteristic: value_max
+    max_age: { hours: 24 }
+    sampling_size: 2000
+  - platform: statistics
+    name: "Coop Humidity Low 24h"
+    entity_id: sensor.coop_humidity
+    state_characteristic: value_min
+    max_age: { hours: 24 }
+    sampling_size: 2000
+  - platform: statistics
+    name: "Outside Humidity High 24h"
+    entity_id: sensor.openweathermap_humidity
+    state_characteristic: value_max
+    max_age: { hours: 24 }
+    sampling_size: 2000
+  - platform: statistics
+    name: "Outside Humidity Low 24h"
+    entity_id: sensor.openweathermap_humidity
+    state_characteristic: value_min
+    max_age: { hours: 24 }
+    sampling_size: 2000

@@ -1,0 +1,366 @@
+# Chicken Coop dashboard. Needs HACS frontend card: apexcharts-card
+# Paste into: Dashboard > ⋮ > Edit > ⋮ > Raw configuration editor.
+title: Chicken Coop
+views:
+  - title: Overview
+    path: overview
+    icon: mdi:egg
+    type: sections
+    max_columns: 2
+    sections:
+      # ---------------- Right now ----------------
+      - type: grid
+        cards:
+          - type: heading
+            heading: Right now
+            icon: mdi:home-thermometer
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: tile
+                entity: sensor.coop_temperature
+                name: Coop temp
+                icon: mdi:thermometer
+                color: orange
+                vertical: true
+                features: [{type: "trend-graph", hours_to_show: 24}]
+              - type: tile
+                entity: sensor.openweathermap_temperature
+                name: Outside temp
+                icon: mdi:weather-partly-cloudy
+                color: blue
+                vertical: true
+                features: [{type: "trend-graph", hours_to_show: 24}]
+              - type: tile
+                entity: sensor.coop_humidity
+                name: Coop humidity
+                icon: mdi:water-percent
+                color: teal
+                vertical: true
+                features: [{type: "trend-graph", hours_to_show: 24}]
+              - type: tile
+                entity: sensor.openweathermap_humidity
+                name: Outside humidity
+                icon: mdi:water-percent
+                color: purple
+                vertical: true
+                features: [{type: "trend-graph", hours_to_show: 24}]
+          - type: gauge
+            entity: sensor.coop_temperature
+            name: Coop comfort
+            needle: true
+            # Ranges are in °F. If you use °C, try min 0 / max 45 and green 5-27.
+            min: 0
+            max: 110
+            segments:
+              - {from: 0, color: "#4dabf7"}
+              - {from: 20, color: "#38d9a9"}
+              - {from: 45, color: "#40c057"}
+              - {from: 80, color: "#fab005"}
+              - {from: 90, color: "#fa5252"}
+      # ---------------- Charts ----------------
+      - type: grid
+        column_span: 2
+        cards:
+          - type: heading
+            heading: Last 24 hours
+            icon: mdi:chart-line
+      - type: custom:apexcharts-card
+        header: { show: true, title: "Temperature", show_states: true, colorize_states: true }
+        graph_span: 24h
+        span: { end: now }
+        update_interval: 1min
+        apex_config:
+          chart: { height: 260, toolbar: { show: false }, background: transparent }
+          grid: { borderColor: "rgba(127,127,127,0.2)", strokeDashArray: 4 }
+          legend: { position: top, horizontalAlign: right }
+          tooltip: { x: { format: "ddd HH:mm" } }
+          fill: { type: gradient, gradient: { shadeIntensity: 0.4, opacityFrom: 0.35, opacityTo: 0.02 } }
+        series:
+          - entity: sensor.coop_temperature
+            name: Coop
+            color: "#ff9f43"
+            stroke_width: 3
+            curve: smooth
+            group_by: { func: avg, duration: 5min }
+            extend_to: now
+          - entity: sensor.openweathermap_temperature
+            name: Outside
+            color: "#4dabf7"
+            stroke_width: 3
+            curve: smooth
+            group_by: { func: avg, duration: 5min }
+            extend_to: now
+      - type: custom:apexcharts-card
+        header: { show: true, title: "Humidity", show_states: true, colorize_states: true }
+        graph_span: 24h
+        span: { end: now }
+        update_interval: 1min
+        apex_config:
+          chart: { height: 260, toolbar: { show: false }, background: transparent }
+          grid: { borderColor: "rgba(127,127,127,0.2)", strokeDashArray: 4 }
+          legend: { position: top, horizontalAlign: right }
+          tooltip: { x: { format: "ddd HH:mm" } }
+          fill: { type: gradient, gradient: { shadeIntensity: 0.4, opacityFrom: 0.35, opacityTo: 0.02 } }
+        series:
+          - entity: sensor.coop_humidity
+            name: Coop
+            color: "#38d9a9"
+            stroke_width: 3
+            curve: smooth
+            group_by: { func: avg, duration: 5min }
+            extend_to: now
+          - entity: sensor.openweathermap_humidity
+            name: Outside
+            color: "#9775fa"
+            stroke_width: 3
+            curve: smooth
+            group_by: { func: avg, duration: 5min }
+            extend_to: now
+      # ---------------- Highs & lows + cameras ----------------
+      - type: grid
+        cards:
+      - type: heading
+        heading: "Temperature"
+        heading_style: subtitle
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: tile
+            entity: sensor.coop_temp_high_24h
+            name: "Coop 24h high"
+            icon: mdi:arrow-up-bold
+            color: red
+            vertical: true
+          - type: tile
+            entity: sensor.coop_temp_low_24h
+            name: "Coop 24h low"
+            icon: mdi:arrow-down-bold
+            color: blue
+            vertical: true
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: tile
+            entity: sensor.coop_temp_high_7d
+            name: "Coop 7d high"
+            icon: mdi:arrow-up-bold
+            color: red
+            vertical: true
+          - type: tile
+            entity: sensor.coop_temp_low_7d
+            name: "Coop 7d low"
+            icon: mdi:arrow-down-bold
+            color: blue
+            vertical: true
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: tile
+            entity: sensor.outside_temp_high_24h
+            name: "Outside 24h high"
+            icon: mdi:arrow-up-bold
+            color: red
+            vertical: true
+          - type: tile
+            entity: sensor.outside_temp_low_24h
+            name: "Outside 24h low"
+            icon: mdi:arrow-down-bold
+            color: blue
+            vertical: true
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: tile
+            entity: sensor.outside_temp_high_7d
+            name: "Outside 7d high"
+            icon: mdi:arrow-up-bold
+            color: red
+            vertical: true
+          - type: tile
+            entity: sensor.outside_temp_low_7d
+            name: "Outside 7d low"
+            icon: mdi:arrow-down-bold
+            color: blue
+            vertical: true
+      - type: heading
+        heading: "Humidity (24h)"
+        heading_style: subtitle
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: tile
+            entity: sensor.coop_humidity_high_24h
+            name: "Coop high"
+            icon: mdi:arrow-up-bold
+            color: red
+            vertical: true
+          - type: tile
+            entity: sensor.coop_humidity_low_24h
+            name: "Coop low"
+            icon: mdi:arrow-down-bold
+            color: blue
+            vertical: true
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: tile
+            entity: sensor.outside_humidity_high_24h
+            name: "Outside high"
+            icon: mdi:arrow-up-bold
+            color: red
+            vertical: true
+          - type: tile
+            entity: sensor.outside_humidity_low_24h
+            name: "Outside low"
+            icon: mdi:arrow-down-bold
+            color: blue
+            vertical: true
+
+      - type: grid
+        column_span: 3
+        cards:
+          - type: heading
+            heading: Cameras
+            icon: mdi:cctv
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              # Replace with your Frigate camera entities
+              - type: picture-entity
+                entity: camera.coop
+                name: Coop
+                camera_view: live
+                show_state: false
+              - type: picture-entity
+                entity: camera.run
+                name: Run
+                camera_view: live
+                show_state: false
+
+  - title: Trends
+    path: trends
+    icon: mdi:chart-areaspline
+    type: sections
+    max_columns: 2
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Last 7 days
+      - type: custom:apexcharts-card
+        header: { show: true, title: "Temperature (7d)", show_states: true, colorize_states: true }
+        graph_span: 7d
+        span: { end: now }
+        update_interval: 1min
+        apex_config:
+          chart: { height: 300, toolbar: { show: false }, background: transparent }
+          grid: { borderColor: "rgba(127,127,127,0.2)", strokeDashArray: 4 }
+          legend: { position: top, horizontalAlign: right }
+          tooltip: { x: { format: "ddd HH:mm" } }
+          fill: { type: gradient, gradient: { shadeIntensity: 0.4, opacityFrom: 0.35, opacityTo: 0.02 } }
+        series:
+          - entity: sensor.coop_temperature
+            name: Coop
+            color: "#ff9f43"
+            stroke_width: 3
+            curve: smooth
+            group_by: { func: avg, duration: 1h }
+            extend_to: now
+          - entity: sensor.openweathermap_temperature
+            name: Outside
+            color: "#4dabf7"
+            stroke_width: 3
+            curve: smooth
+            group_by: { func: avg, duration: 1h }
+            extend_to: now
+      - type: custom:apexcharts-card
+        header: { show: true, title: "Humidity (7d)", show_states: true, colorize_states: true }
+        graph_span: 7d
+        span: { end: now }
+        update_interval: 1min
+        apex_config:
+          chart: { height: 300, toolbar: { show: false }, background: transparent }
+          grid: { borderColor: "rgba(127,127,127,0.2)", strokeDashArray: 4 }
+          legend: { position: top, horizontalAlign: right }
+          tooltip: { x: { format: "ddd HH:mm" } }
+          fill: { type: gradient, gradient: { shadeIntensity: 0.4, opacityFrom: 0.35, opacityTo: 0.02 } }
+        series:
+          - entity: sensor.coop_humidity
+            name: Coop
+            color: "#38d9a9"
+            stroke_width: 3
+            curve: smooth
+            group_by: { func: avg, duration: 1h }
+            extend_to: now
+          - entity: sensor.openweathermap_humidity
+            name: Outside
+            color: "#9775fa"
+            stroke_width: 3
+            curve: smooth
+            group_by: { func: avg, duration: 1h }
+            extend_to: now
+      - type: grid
+        cards:
+          - type: heading
+            heading: Last 30 days
+      - type: custom:apexcharts-card
+        header: { show: true, title: "Temperature (30d)", show_states: true, colorize_states: true }
+        graph_span: 30d
+        span: { end: now }
+        update_interval: 1min
+        apex_config:
+          chart: { height: 300, toolbar: { show: false }, background: transparent }
+          grid: { borderColor: "rgba(127,127,127,0.2)", strokeDashArray: 4 }
+          legend: { position: top, horizontalAlign: right }
+          tooltip: { x: { format: "ddd HH:mm" } }
+          fill: { type: gradient, gradient: { shadeIntensity: 0.4, opacityFrom: 0.35, opacityTo: 0.02 } }
+        series:
+          - entity: sensor.coop_temperature
+            name: Coop
+            color: "#ff9f43"
+            stroke_width: 3
+            curve: smooth
+            group_by: { func: avg, duration: 1h }
+            extend_to: now
+          - entity: sensor.openweathermap_temperature
+            name: Outside
+            color: "#4dabf7"
+            stroke_width: 3
+            curve: smooth
+            group_by: { func: avg, duration: 1h }
+            extend_to: now
+      - type: custom:apexcharts-card
+        header: { show: true, title: "Humidity (30d)", show_states: true, colorize_states: true }
+        graph_span: 30d
+        span: { end: now }
+        update_interval: 1min
+        apex_config:
+          chart: { height: 300, toolbar: { show: false }, background: transparent }
+          grid: { borderColor: "rgba(127,127,127,0.2)", strokeDashArray: 4 }
+          legend: { position: top, horizontalAlign: right }
+          tooltip: { x: { format: "ddd HH:mm" } }
+          fill: { type: gradient, gradient: { shadeIntensity: 0.4, opacityFrom: 0.35, opacityTo: 0.02 } }
+        series:
+          - entity: sensor.coop_humidity
+            name: Coop
+            color: "#38d9a9"
+            stroke_width: 3
+            curve: smooth
+            group_by: { func: avg, duration: 1h }
+            extend_to: now
+          - entity: sensor.openweathermap_humidity
+            name: Outside
+            color: "#9775fa"
+            stroke_width: 3
+            curve: smooth
+            group_by: { func: avg, duration: 1h }
+            extend_to: now
